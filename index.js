@@ -9,6 +9,7 @@ const connectDB = require('./db/config');
 
 const userRoutes = require('./routes/userRouter'); 
 const teamRouter = require('./routes/TeamRouter')
+const projectRouters = require('./routes/ProjectsRoutes')
 
 
 connectDB();
@@ -20,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/users', userRoutes);
 app.use('/teams',teamRouter)
+app.use('/projects',projectRouters)
 
 
 app.get('/', (req, res) => {
