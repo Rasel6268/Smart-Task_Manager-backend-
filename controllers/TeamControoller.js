@@ -30,3 +30,19 @@ exports.createTeam = async (req, res) => {
     });
   }
 };
+exports.getTeams = async (req, res) => {
+  try {
+    const teams = await Teams.find();
+    return res.status(200).json({
+      success: true,
+      count: teams.length,
+      teams,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};

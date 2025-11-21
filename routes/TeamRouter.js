@@ -1,7 +1,8 @@
 const express = require('express')
-const { createTeam } = require('../controllers/TeamControoller')
+const { createTeam, getTeams } = require('../controllers/TeamControoller')
 const router = express.Router()
 
-router.post('',createTeam)
+router.post('/',createTeam)
+router.get('/',getTeams)
 
 module.exports = router
