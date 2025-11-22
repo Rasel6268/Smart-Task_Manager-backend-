@@ -78,3 +78,30 @@ exports.getTasksByProject = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch project tasks' });
   }
 };
+exports.updateTask = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    const task = await Tasks.findByIdAndUpdate(
+      id,
+      updates,
+      { new: true, runValidators: true }
+    ).populate({
+      path: "project",
+      model: "Projects",
+      populate: {
+        path: "team",
+        model: "Team"
+      }
+    });
+    res.json({
+      success: true,
+      message: "Task updated successfully",
+      task
+    });
+  } catch (error) {
+    console.error('Update task error:', error);
+    res.status(500).json({ error: 'Failed to update task' });
+  }
+};
