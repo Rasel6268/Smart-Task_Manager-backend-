@@ -8,7 +8,7 @@ const taskSchema = new mongoose.Schema({
   description: String,
   project: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Project',
+    ref: 'Projects',
     required: true
   },
   assignedMember: [
@@ -29,8 +29,7 @@ const taskSchema = new mongoose.Schema({
     default: 'Pending'
   },
   createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: true
   },
   createdAt: {
