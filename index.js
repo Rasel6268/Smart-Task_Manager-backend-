@@ -12,6 +12,7 @@ const userRoutes = require('./routes/userRouter');
 const teamRouter = require('./routes/TeamRouter')
 const projectRouters = require('./routes/ProjectsRoutes')
 const taskRoutes = require('./routes/TasksRoutes')
+const dashboardRoute = require('./routes/dashboard')
 
 
 connectDB();
@@ -25,6 +26,7 @@ app.use('/users', userRoutes);
 app.use('/teams',teamRouter)
 app.use('/projects',projectRouters)
 app.use('/tasks',taskRoutes)
+app.use('/dashboard',dashboardRoute)
 
 
 app.get('/', (req, res) => {

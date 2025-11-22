@@ -1,8 +1,10 @@
 const express = require('express');
-const { getDashboard } = require('../controllers/dashboardController');
+const { getDashboardByEmail } = require('../controllers/dashboardController');
+
+
 const router = express.Router();
 
 
-router.get('/', getDashboard);
+router.get('/:email', getDashboardByEmail);
 
 module.exports = router;
