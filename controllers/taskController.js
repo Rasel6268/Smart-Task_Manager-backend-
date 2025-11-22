@@ -124,3 +124,65 @@ exports.deleteTask = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete task' });
   }
 };
+exports.autoAssignTask = async (req, res) => {
+  try {
+    const { projectId } = req.body;
+    const project = await Projects.findById(projectId).populate({
+      path: "team",
+      model: "Team"
+    });
+
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    if (!project.team || !project.team.members || project.team.members.length === 0) {
+      return res.status(400).json({ error: "No team members found for this project" });
+    }
+    const projectTasks = await Tasks.find({ project: projectId });
+    const memberWorkload = project.team.members.map(member => {
+      const taskCount = projectTasks.filter(task => 
+        task.assignedMember.some(assigned => assigned.name === member.name)
+      ).length;
+      
+      return {
+        member,
+        taskCount,
+        availableCapacity: member.capacity - taskCount
+      };
+    });
+
+    const availableMembers = memberWorkload
+      .filter(({ availableCapacity }) => availableCapacity > 0)
+      .sort((a, b) => b.availableCapacity - a.availableCapacity);
+
+    if (availableMembers.length === 0) {
+      return res.status(400).json({ 
+        error: "No team members have available capacity",
+        details: memberWorkload.map(m => ({
+          member: m.member.name,
+          currentTasks: m.taskCount,
+          capacity: m.member.capacity
+        }))
+      });
+    }
+
+    const bestMember = availableMembers[0].member;
+
+    res.json({
+      success: true,
+      assignedMember: bestMember,
+      message: `Auto-assigned to ${bestMember.name} with ${availableMembers[0].availableCapacity} tasks available`,
+      details: {
+        memberName: bestMember.name,
+        currentTasks: availableMembers[0].taskCount,
+        capacity: bestMember.capacity,
+        availableTasks: availableMembers[0].availableCapacity
+      }
+    });
+
+  } catch (error) {
+    console.error('Auto-assign task error:', error);
+    res.status(500).json({ error: 'Failed to auto-assign task' });
+  }
+};
