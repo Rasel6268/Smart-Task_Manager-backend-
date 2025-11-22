@@ -32,17 +32,19 @@ exports.createTeam = async (req, res) => {
 };
 exports.getTeams = async (req, res) => {
   try {
-    const teams = await Teams.find();
-    return res.status(200).json({
-      success: true,
-      count: teams.length,
-      teams,
-    });
+    const { email } = req.params;
+
+    if (!email)
+      return res
+        .status(400)
+        .json({ success: false, message: "Email is required" });
+
+    const teams = await Teams.find({ createdBy: email });
+
+    res.status(200).json({ success: true, count: teams.length, teams });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
   }
 };
